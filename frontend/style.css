@@ -1,0 +1,26 @@
+body {
+    background-color: #f5f5f5;
+}
+
+.card {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.ad-card {
+    margin-bottom: 20px;
+}
+
+.ad-price {
+    color: #28a745;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+.ad-contact {
+    color: #007bff;
+}

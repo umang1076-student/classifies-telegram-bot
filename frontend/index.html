@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доска объявлений</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">📢 Доска объявлений</h1>
+
+        <!-- Форма создания объявления -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">➕ Создать объявление</div>
+            <div class="card-body">
+                <form id="adForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <input type="text" id="title" class="form-control" placeholder="Название" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <input type="number" id="price" class="form-control" placeholder="Цена (руб)" required>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <textarea id="description" class="form-control" rows="3" placeholder="Описание" required></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <input type="text" id="category" class="form-control" placeholder="Категория" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <input type="text" id="contact" class="form-control" placeholder="Контакт (телефон, Telegram)" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">📤 Опубликовать</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Список объявлений -->
+        <h2>📋 Все объявления</h2>
+        <div id="adsList" class="row"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
