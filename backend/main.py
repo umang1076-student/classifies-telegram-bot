@@ -1,22 +1,32 @@
+import sys
+import os
+from datetime import datetime
+
+# Add current directory to path so Python can find modules
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+
 from database import SessionLocal, Ad
 from schemas import AdCreate, AdResponse
 from telegram_bot import send_to_telegram
-from datetime import datetime
 
-app = FastAPI(title="Classifieds API")
+# Create FastAPI app
+app = FastAPI(title="Classifieds API", description="Telegram Classifieds Bot API", version="1.0.0")
 
-# CORS middleware
+# Enable CORS (so frontend can talk to backend)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
+# Database dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -25,8 +35,18 @@ def get_db():
         db.close()
 
 
+# ==================== API ENDPOINTS ====================
+
+# Root endpoint
+@app.get("/")
+def root():
+    return {"message": "Welcome to Classifieds API", "docs": "/docs"}
+
+
+# CREATE an ad
 @app.post("/ads", response_model=AdResponse)
 def create_ad(ad: AdCreate, db: Session = Depends(get_db)):
+    # Create new ad in database
     db_ad = Ad(
         title=ad.title,
         price=ad.price,
@@ -39,16 +59,23 @@ def create_ad(ad: AdCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_ad)
 
-    send_to_telegram(ad)
+    # Send to Telegram (ignore errors if VPN is off)
+    try:
+        send_to_telegram(ad)
+    except Exception as e:
+        print(f"Telegram error (ignored): {e}")
 
     return db_ad
 
 
+# GET all ads
 @app.get("/ads", response_model=list[AdResponse])
 def get_ads(db: Session = Depends(get_db)):
-    return db.query(Ad).order_by(Ad.created_at.desc()).all()
+    ads = db.query(Ad).order_by(Ad.created_at.desc()).all()
+    return ads
 
 
+# GET single ad by ID
 @app.get("/ads/{ad_id}", response_model=AdResponse)
 def get_ad(ad_id: int, db: Session = Depends(get_db)):
     ad = db.query(Ad).filter(Ad.id == ad_id).first()
@@ -57,6 +84,7 @@ def get_ad(ad_id: int, db: Session = Depends(get_db)):
     return ad
 
 
+# UPDATE an ad
 @app.put("/ads/{ad_id}", response_model=AdResponse)
 def update_ad(ad_id: int, ad: AdCreate, db: Session = Depends(get_db)):
     db_ad = db.query(Ad).filter(Ad.id == ad_id).first()
@@ -74,6 +102,7 @@ def update_ad(ad_id: int, ad: AdCreate, db: Session = Depends(get_db)):
     return db_ad
 
 
+# DELETE an ad
 @app.delete("/ads/{ad_id}")
 def delete_ad(ad_id: int, db: Session = Depends(get_db)):
     ad = db.query(Ad).filter(Ad.id == ad_id).first()
@@ -82,9 +111,4 @@ def delete_ad(ad_id: int, db: Session = Depends(get_db)):
 
     db.delete(ad)
     db.commit()
-    return {"message": "Ad deleted"}
-
-
-@app.get("/")
-def root():
-    return {"message": "Welcome to Classifieds API", "docs": "/docs"}
+    return {"message": "Ad deleted successfully"}

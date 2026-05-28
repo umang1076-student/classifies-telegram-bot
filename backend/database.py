@@ -22,6 +22,5 @@ class Ad(Base):
     created_at = Column(DateTime, default=datetime.now)
 
 
+# Only create tables if not exists
 Base.metadata.create_all(bind=engine)
-
-print("✅ Database created! File: classifieds.db")
