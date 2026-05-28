@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000";
+const API_URL = "https://telegram-bot-umang04.amvera.io";
 
 // Загрузка всех объявлений
 async function loadAds() {
