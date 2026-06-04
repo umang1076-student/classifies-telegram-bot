@@ -17,3 +17,4 @@
 ```bash
 cd backend
 uvicorn main:app --reload
+- CI/CD настроен
